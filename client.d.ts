@@ -465,3 +465,18 @@ export declare namespace workshop {
   export function getAllItems(page: number, queryType: UGCQueryType, itemType: UGCType, creatorAppId: number, consumerAppId: number, queryConfig?: WorkshopItemQueryConfig | undefined | null): Promise<WorkshopPaginatedResult>
   export function getUserItems(page: number, accountId: number, listType: UserListType, itemType: UGCType, sortOrder: UserListOrder, appIds: AppIDs, queryConfig?: WorkshopItemQueryConfig | undefined | null): Promise<WorkshopPaginatedResult>
 }
+export declare namespace inventory {
+  export interface NapiSteamItemDetails {
+    itemId: bigint
+    definition: number
+    quantity: number
+    flags: number
+  }
+  export const enum NapiInventoryError {
+    OperationFailed = 0,
+    GetResultItemsFailed = 1,
+    InvalidInput = 2,
+    Timeout = 3
+  }
+  export function getAllItems(): Array<NapiSteamItemDetails>
+}
