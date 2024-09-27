@@ -56,4 +56,14 @@ pub mod inventory {
                 Error::new(Status::GenericFailure, format!("{:?}", napi_error))
             })
     }
+
+    #[napi]
+    pub fn consume_item(item_id: BigInt, quantity: u16) -> Result<()> {
+        let client = crate::client::get_client();
+        client.inventory().consume_item(steamworks::SteamItemId(item_id.get_u64().1), quantity)
+            .map_err(|e| {
+                let napi_error: NapiInventoryError = e.into();
+                Error::new(Status::GenericFailure, format!("{:?}", napi_error))
+            })
+    }
 }
