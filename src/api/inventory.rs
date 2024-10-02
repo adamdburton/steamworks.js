@@ -58,12 +58,33 @@ pub mod inventory {
     }
 
     #[napi]
-    pub fn consume_item(item_id: BigInt, quantity: u16) -> Result<()> {
+    pub fn consume_item(item_id: BigInt, quantity: u32) -> Result<()> {
         let client = crate::client::get_client();
-        client.inventory().consume_item(steamworks::SteamItemId(item_id.get_u64().1), quantity)
+        let item_id = steamworks::SteamItemInstanceID(item_id.get_u64().1);
+
+        client.inventory().consume_item(item_id, quantity)
             .map_err(|e| {
                 let napi_error: NapiInventoryError = e.into();
                 Error::new(Status::GenericFailure, format!("{:?}", napi_error))
             })
+    }
+
+    #[napi]
+    pub fn start_purchase(item_id: i32, quantity: u32) {
+        let client = crate::client::get_client();
+        let items_to_purchase = vec![(steamworks::SteamItemDef(item_id), quantity)];
+
+        client.inventory().start_purchase(&items_to_purchase, |result| {
+            match result {
+                Ok(purchase_result) => {
+                    println!("Purchase started successfully!");
+                    println!("Order ID: {}", purchase_result.order_id);
+                    println!("Transaction ID: {}", purchase_result.trans_id);
+                },
+                Err(error) => {
+                    println!("Failed to start purchase: {:?}", error);
+                }
+            }
+        });
     }
 }
